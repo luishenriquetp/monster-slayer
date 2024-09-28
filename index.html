@@ -2,12 +2,27 @@
 <html lang="en">
   <head>
     <meta charset="UTF-8" />
-    <link rel="icon" type="image/svg+xml" href="/vite.svg" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <link rel="stylesheet" href="https://unpkg.com/nes.css/css/nes.css"/>
+    <link rel="stylesheet" href="./node_modules/nes.css/css/nes.min.css">
+
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap">
+    
+
+    <style>
+      html, body, pre, code, kbd, samp {
+          font-family: "Press Start 2P", system-ui;
+      }
+    </style>
+    <link rel="icon" type="image/x-icon" href="/favicon.ico" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Vite + React</title>
+    <title>Monster Slayer</title>
   </head>
-  <body>
-    <div id="root"></div>
+  <body className="bg-[url('./src/assets/background.jpg')]">
+    <div id="root" className="min-h-screen"></div>
     <script type="module" src="/src/main.jsx"></script>
   </body>
 </html>
