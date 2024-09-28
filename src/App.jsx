@@ -190,8 +190,8 @@ function App() {
 
   return (
     <div className='relative'>
-      <audio ref={audioRef} src="src/assets/battle.wav" hidden loop></audio>
-      <div className="bg-[url('src/assets/background.jpg')] w-full h-screen bg-cover fixed opacity-50 inset-0 -z-10"/>
+      <audio ref={audioRef} src="https://raw.githubusercontent.com/luishenriquetp/monster-slayer/refs/heads/main/src/assets/battle.wav" hidden loop></audio>
+      <div className="bg-[url('https://raw.githubusercontent.com/luishenriquetp/monster-slayer/refs/heads/main/src/assets/background.jpg')] w-full h-screen bg-cover fixed opacity-50 inset-0 -z-10"/>
 
       {/* Highest Score / Monsters Defeated info bar */}
       <div className = "hidden lg:block text-center nes-container is-dark is-rounded columns-3 p-2">
@@ -287,7 +287,7 @@ function App() {
               <p className="mb-3 w-full">
                 <progress className={`nes-progress ${playerHealth > 50 ? 'is-success' : 'is-error' }`} value={playerHealth} max="100"></progress>
               </p>
-              <img src="src/assets/hero.jpg" className="mx-auto w-auto h-36 lg:h-60" alt="hero"/>
+              <img src="https://raw.githubusercontent.com/luishenriquetp/monster-slayer/refs/heads/main/src/assets/hero.jpg" className="mx-auto w-auto h-36 lg:h-60" alt="hero"/>
               <p>Hero<br/><span className=" lg:hidden"> HS:{highestScore}</span></p>
             </div>
 
@@ -339,7 +339,7 @@ function App() {
               <p className="mb-3 w-full">
                 <progress className={`nes-progress  ${monsterHealth > 50 ? 'is-success' : 'is-error' }`} value={monsterHealth} max="100"></progress>
               </p>
-              <img src="src/assets/monster.jpg" className="mx-auto w-auto h-36 lg:h-60" alt="monster"/>
+              <img src="https://raw.githubusercontent.com/luishenriquetp/monster-slayer/refs/heads/main/src/assets/monster.jpg" className="mx-auto w-auto h-36 lg:h-60" alt="monster"/>
               <p>Monster<br/><span className=" lg:hidden"> MD:{monstersDefeated}</span></p>
             </div>
           </div>
