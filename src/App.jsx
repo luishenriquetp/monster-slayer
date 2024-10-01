@@ -1,10 +1,11 @@
 import { useState, useEffect, useRef } from 'react';
 import './App.css';
 import "nes.css/css/nes.min.css";
+import Dialog from './components/Dialog';
 
 
 function App() {
-// #region Hooks
+// #region States/Refs
   const [monsterHealth, setMonsterHealth] = useState(100);
   const [playerHealth, setPlayerHealth] = useState(100);
   const [monstersDefeated, setMonstersDefeated] = useState(0);
@@ -39,16 +40,20 @@ function App() {
   };
 
   const cancelTurnRef = useRef(false); // Usando useRef aqui
-// #endregion
+
   
   const battleLogRef = useRef(null);
+
+
+
+// #endregion
+// #region Handlers
 
   const handleTurn = () => {
     setButtonsDisabled(true);
     const monsterAttack = Math.ceil(Math.random() * 30);
     const playerAttack = Math.ceil(Math.random() * 30);
     
-
     setTimeout(turn1, 1000);
     function turn1() {
       if (monsterHealth - playerAttack > 0) {
@@ -61,8 +66,6 @@ function App() {
         setOpenWinner(true);
       }
     }
-
-    
 
     setTimeout(turn2, 3000);
     function turn2() {
@@ -95,7 +98,6 @@ function App() {
     const monsterAttack = Math.ceil(Math.random() * 30);
     const playerAttack = Math.ceil(Math.random() * 30) * 3;
     
-
     setTimeout(turn1, 1000);
     function turn1() {
       if (monsterHealth - playerAttack > 0) {
@@ -108,8 +110,6 @@ function App() {
         setOpenWinner(true);
       }
     }
-
-    
 
     setTimeout(turn2, 3000);
     function turn2() {
@@ -143,23 +143,25 @@ function App() {
     setPlayerHealth(100);
     setMonsterHealth(100);
     setBattleLog([]);
-    setHighestScore(() => highestScore + 1);
-    setMonstersDefeated(() => monstersDefeated + 1);
     setSpecialActionsCounter(() => 0);
     cancelTurnRef.current = false;
     setOpenWinner(false);
-
-    const newHighestScore = highestScore + 1;
-    setHighestScore(newHighestScore);
-    setMonstersDefeated(() => monstersDefeated + 1);
     setSpecialActionsCounter(() => 0);
     cancelTurnRef.current = false;
     setOpenWinner(false);
+    setMonstersDefeated((prevMonstersDefeated) => {
+      const newMonstersDefeated = prevMonstersDefeated + 1;
 
-    // Save to localStorage if the new highest score is greater than monstersDefeated
-    if (newHighestScore > monstersDefeated) {
+      setHighestScore((prevHighestScore) => {
+        const newHighestScore = newMonstersDefeated > prevHighestScore ? newMonstersDefeated : prevHighestScore;
+
         localStorage.setItem('highestScore', newHighestScore);
-    }
+  
+        return newHighestScore;
+      });
+  
+      return newMonstersDefeated;
+    });
   }
 
   const handleNewTurnLooser = () => {
@@ -175,6 +177,8 @@ function App() {
     setOpenSurrender(false);
   }
 
+  // #endregion
+// #region Effects
   useEffect(() => {
     if (battleLogRef.current) {
       battleLogRef.current.scrollTop = battleLogRef.current.scrollHeight;
@@ -186,8 +190,8 @@ function App() {
     if (savedScore) {
         setHighestScore(parseInt(savedScore, 10));
     }
-}, []);
-
+  }, []);
+// #endregion
   return (
     <div className='relative'>
       <audio ref={audioRef} src="https://raw.githubusercontent.com/luishenriquetp/monster-slayer/refs/heads/main/src/assets/battle.wav" hidden loop></audio>
@@ -222,38 +226,32 @@ function App() {
           {/* Win/Loose/Surrender modal */}
           <section>
 
-            <dialog className="nes-dialog is-rounded z-10" id="dialog" open={openWinner}>
-              <form method="dialog">
-                <p className="title">You Win!</p>
-                <p>Continue playing?</p>
-                <menu className="dialog-menu">
-                  <button className="nes-btn">Cancel</button>
-                  <button onClick={handleNewTurnWinner}className="nes-btn is-primary">Confirm</button>
-                </menu>
-              </form>
-            </dialog>
+            <Dialog
+              openAction={openWinner} 
+              title="You Win!"
+              subtitle="Continue playing?"
+              renderCancel={true}
+              handleCancel={() => setOpenWinner(false)}
+              handleOk={handleNewTurnWinner}
+            />           
 
-            <dialog className="nes-dialog is-rounded z-10" id="dialog" open={openLooser}>
-              <form method="dialog">
-                <p className="title">You Loose!</p>
-                <p>Continue playing?</p>
-                <menu className="dialog-menu">
-                  <button className="nes-btn">Cancel</button>
-                  <button onClick={handleNewTurnLooser}className="nes-btn is-primary">Confirm</button>
-                </menu>
-              </form>
-            </dialog>
+            <Dialog
+              openAction={openLooser} 
+              title="You Loose!"
+              subtitle="Continue playing?"
+              renderCancel={true}
+              handleCancel={() => setOpenLooser(false)}
+              handleOk={handleNewTurnLooser}
+            />
 
-            <dialog className="nes-dialog is-rounded z-10" id="dialog" open={openSurrender}>
-              <form method="dialog">
-                <p className="title">Surrender</p>
-                <p>Are you sure?</p>
-                <menu className="dialog-menu">
-                  <button onClick={()=>setOpenSurrender(false)}className="nes-btn">Cancel</button>
-                  <button onClick={handleNewTurnLooser}className="nes-btn is-primary">Confirm</button>
-                </menu>
-              </form>
-            </dialog>
+            <Dialog
+              openAction={openSurrender} 
+              title="Surrender"
+              subtitle="Are you sure?"
+              renderCancel={true}
+              handleCancel={() => setOpenSurrender(false)}
+              handleOk={handleNewTurnLooser}
+            />
 
             <dialog className="nes-dialog is-rounded z-10" id="dialog" open={openSettings}>
               <form method="dialog">
@@ -273,6 +271,7 @@ function App() {
                 </menu>
               </form>
             </dialog>
+            
 
           </section>
           
