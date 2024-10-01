@@ -275,19 +275,23 @@ function App() {
 
           </section>
           
-          
-          
-
           {/* Player/Monster/Controls panel */}
           <div className="flex justify-between items-center">
             
             {/* Player Pannel */}
-            <div className="flex flex-col items-center">
-              <p className="mb-3 w-full">
-                <progress className={`nes-progress ${playerHealth > 50 ? 'is-success' : 'is-error' }`} value={playerHealth} max="100"></progress>
+            <div className="flex flex-col items-center justify-center h-full">
+              
+              <progress className={`nes-progress w-full mb-5 ${playerHealth > 50 ? 'is-success' : 'is-error'}`} value={playerHealth} max="100"></progress>
+            
+              <img src="https://raw.githubusercontent.com/luishenriquetp/monster-slayer/refs/heads/main/src/assets/hero.jpg" className="mx-auto w-auto h-36 lg:h-60" alt="hero" />
+              
+              <p>
+                Hero
+                <br/>
+                <span className=" lg:hidden"> 
+                  HS:{highestScore}
+                </span>
               </p>
-              <img src="https://raw.githubusercontent.com/luishenriquetp/monster-slayer/refs/heads/main/src/assets/hero.jpg" className="mx-auto w-auto h-36 lg:h-60" alt="hero"/>
-              <p>Hero<br/><span className=" lg:hidden"> HS:{highestScore}</span></p>
             </div>
 
             {/* Controls */}
@@ -332,14 +336,20 @@ function App() {
               
             </div>
             
-
             {/* Monster Panel */}
             <div className="flex flex-col items-center">
-              <p className="mb-3 w-full">
-                <progress className={`nes-progress  ${monsterHealth > 50 ? 'is-success' : 'is-error' }`} value={monsterHealth} max="100"></progress>
-              </p>
+              
+              <progress className={`nes-progress w-full mb-5 ${monsterHealth > 50 ? 'is-success' : 'is-error' }`} value={monsterHealth} max="100"></progress>
+              
               <img src="https://raw.githubusercontent.com/luishenriquetp/monster-slayer/refs/heads/main/src/assets/monster.jpg" className="mx-auto w-auto h-36 lg:h-60" alt="monster"/>
-              <p>Monster<br/><span className=" lg:hidden"> MD:{monstersDefeated}</span></p>
+              
+              <p>
+                Monster
+                <br/>
+                <span className=" lg:hidden"> 
+                  MD:{monstersDefeated}
+                </span>
+              </p>
             </div>
           </div>
 
