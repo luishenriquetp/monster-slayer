@@ -50,7 +50,7 @@ function App() {
 // #region Handlers
 
   const handleTurn = () => {
-    setButtonsDisabled(true);
+    setButtonsDisabled(()=>true);
     const monsterAttack = Math.ceil(Math.random() * 30);
     const playerAttack = Math.ceil(Math.random() * 30);
     
@@ -60,10 +60,10 @@ function App() {
         setMonsterHealth((state) => state - playerAttack);
         setBattleLog(state => [...state, `Monster suffered ${playerAttack}% of damage.`]);
       } else {
-        setMonsterHealth(0);
+        setMonsterHealth(()=>0);
         setBattleLog(state => [...state, 'You win!']);
         cancelTurnRef.current = true;
-        setOpenWinner(true);
+        setOpenWinner(()=>true);
       }
     }
 
@@ -74,27 +74,27 @@ function App() {
         setPlayerHealth((state) => state - monsterAttack);
         setBattleLog(state => [...state, `You suffered ${monsterAttack}% of damage.`]);
       } else {
-        setPlayerHealth(0);
+        setPlayerHealth(()=>0);
         setBattleLog(state => [...state, 'You lose!']);
         cancelTurnRef.current = true
-        setOpenLooser(true);
+        setOpenLooser(()=>true);
         
       }
       setSpecialActionsCounter(() => specialActionsCounter + 1);
       if(specialActionsCounter === 2) {
-        setSpecialAttack(false);
-        setHeal(false)
+        setSpecialAttack(()=>false);
+        setHeal(()=>false)
       }
       if(cancelTurnRef.current) return;
-      setButtonsDisabled(false);
+      setButtonsDisabled(()=>false);
     }
     
   };
 
   const handleSpecialAttackTurn = () => {
-    setButtonsDisabled(true);
+    setButtonsDisabled(()=>true);
     setSpecialActionsCounter(() => 0);
-    setSpecialAttack(true);
+    setSpecialAttack(()=>true);
     const monsterAttack = Math.ceil(Math.random() * 30);
     const playerAttack = Math.ceil(Math.random() * 30) * 3;
     
@@ -104,10 +104,10 @@ function App() {
         setMonsterHealth((state) => state - playerAttack);
         setBattleLog(state => [...state, `Monster suffered ${playerAttack}% of damage.`]);
       } else {
-        setMonsterHealth(0);
+        setMonsterHealth( () => 0);
         setBattleLog(state => [...state, 'You win!']);
         cancelTurnRef.current = true;
-        setOpenWinner(true);
+        setOpenWinner(() => true);
       }
     }
 
@@ -118,21 +118,21 @@ function App() {
         setPlayerHealth((state) => state - monsterAttack);
         setBattleLog(state => [...state, `You suffered ${monsterAttack}% of damage.`]);
       } else {
-        setPlayerHealth(0);
+        setPlayerHealth(()=>0);
         setBattleLog(state => [...state, 'You lose!']);
         cancelTurnRef.current = true
-        setOpenLooser(true);
+        setOpenLooser(()=>true);
         
       }
       if(cancelTurnRef.current) return;
-      setButtonsDisabled(false);
+      setButtonsDisabled(()=>false);
     }
     
   };
 
   const handleHealTurn = () => {
     setPlayerHealth(() => playerHealth + 10);
-    setHeal(true);
+    setHeal(()=>true);
     setSpecialActionsCounter(() => 0)
   }
 
@@ -140,15 +140,15 @@ function App() {
     setButtonsDisabled(() => false);
     setSpecialAttack(() => true);
     setHeal(() => true);
-    setPlayerHealth(100);
-    setMonsterHealth(100);
-    setBattleLog([]);
+    setPlayerHealth(()=>100);
+    setMonsterHealth(()=>100);
+    setBattleLog(()=>[]);
     setSpecialActionsCounter(() => 0);
     cancelTurnRef.current = false;
-    setOpenWinner(false);
+    setOpenWinner(()=>false);
     setSpecialActionsCounter(() => 0);
     cancelTurnRef.current = false;
-    setOpenWinner(false);
+    setOpenWinner(()=>false);
     setMonstersDefeated((prevMonstersDefeated) => {
       const newMonstersDefeated = prevMonstersDefeated + 1;
 
@@ -168,13 +168,13 @@ function App() {
     setButtonsDisabled(() => false);
     setSpecialAttack(() => true);
     setHeal(() => true);
-    setPlayerHealth(100);
-    setMonsterHealth(100);
-    setBattleLog([]);
+    setPlayerHealth(()=>100);
+    setMonsterHealth(()=>100);
+    setBattleLog(()=>[]);
     setSpecialActionsCounter(() => 0);
     cancelTurnRef.current = false;
-    setOpenLooser(false);
-    setOpenSurrender(false);
+    setOpenLooser(()=>false);
+    setOpenSurrender(()=>false);
   }
 
   // #endregion
