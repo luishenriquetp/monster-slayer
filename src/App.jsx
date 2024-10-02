@@ -52,6 +52,7 @@ function App() {
 // #region Handlers
 
   const handleTurn = () => {
+    if(cancelTurnRef.current) return;
     //Desabilita botões attack e surrender
     setEnableButtons(false);
     
@@ -142,7 +143,7 @@ function App() {
     setEnableHeal(()=>false)
     setBattleLog(state => [...state, 'Special damaged Monster on 10%.']);
     handleTurn();
-    setTimeout(special, 3000)
+    setTimeout(special, 3000);
     function special() {
       if(cancelTurnRef.current) return;
       setMonsterHealth(()=>monsterHealth - 10)
@@ -156,7 +157,9 @@ function App() {
   }
 
   const handleNewTurn = () => {
-    setPlayerHealth(()=>100);
+    setTimeout(newTurn, 3000);
+    function newTurn() {
+      setPlayerHealth(()=>100);
     setMonsterHealth(()=>100);
     setBattleLog(()=>[]);
     setEnableButtons(()=>true);
@@ -182,6 +185,7 @@ function App() {
         return newMonstersDefeated;
       });
       setOpenWinner(()=>false);
+    }
     }
   }
 
