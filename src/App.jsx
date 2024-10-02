@@ -70,6 +70,7 @@ function App() {
     //Seta um segundo antes de chamar a função
     setTimeout(turn1, 1000);
     function turn1() {
+      if(cancelTurnRef.current) return;
       if (monsterHealth - playerAttack > 0) {
         setMonsterHealth((state) => state - playerAttack);
         setBattleLog(state => [...state, `Monster suffered ${playerAttack}% of damage.`]);
@@ -78,6 +79,7 @@ function App() {
         setBattleLog(state => [...state, 'You win!']);
         cancelTurnRef.current = true;
         setOpenWinner(()=>true);
+        if(cancelTurnRef.current) return;
       }
     }
 
@@ -95,6 +97,7 @@ function App() {
         setBattleLog(state => [...state, 'You lose!']);
         cancelTurnRef.current = true
         setOpenLooser(()=>true);
+        if(cancelTurnRef.current) return;
       }
       
       //Cancela o turno se a vida do jogador acabar
@@ -102,13 +105,13 @@ function App() {
       
       //Adiciona o contador do Special e habilita quando 3 rodadas
       setCounterSpecial(()=>counterSpecial + 1);
-      if(counterSpecial === 2) {
+      if(counterSpecial >= 2) {
         setEnableSpecial(()=>true);
       }
 
       //Adiciona o contador do Heal e habilita quando 3 rodadas
       setCounterHeal(()=>counterHeal + 1);
-      if(counterHeal === 2) {
+      if(counterHeal >= 2) {
         setEnableHeal(()=>true);
       }
 
@@ -119,34 +122,33 @@ function App() {
   };
 
   const handleHealTurn = () => {
-    setEnableHeal(()=>false);
+    
     setEnableSpecial(()=>false);
     setBattleLog(state => [...state, 'Heal increased 10% of your health.']);
     handleTurn();
     setTimeout(heal, 3000);
     function heal() {
       setPlayerHealth(()=>playerHealth + 10);
-    
-    setCounterHeal(()=>0);
-    
-    if (counterSpecial > 0) {
-      setEnableSpecial(()=>true);
-    }
+      setCounterHeal(()=>0);
+      setEnableHeal(()=>false);
+      if (counterSpecial >= 2) {
+        setEnableSpecial(()=>true);
+      }
     }
 
   }
 
   const handleSpecialTurn = () => {
-  setEnableSpecial(()=>false);
+  
   setEnableHeal(()=>false)
   setBattleLog(state => [...state, 'Special damaged Monster on 10%.']);
   handleTurn();
   setTimeout(special, 3000)
   function special() {
     setMonsterHealth(()=>monsterHealth - 10)
-    
     setCounterSpecial(()=>0);
-    if (counterHeal > 0) {
+    setEnableSpecial(()=>false);
+    if (counterHeal >=2 ) {
       setEnableHeal(()=>true);
     }
    }
