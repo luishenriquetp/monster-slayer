@@ -11,16 +11,18 @@ function App() {
   const [monstersDefeated, setMonstersDefeated] = useState(0);
   const [highestScore, setHighestScore] = useState(0);
   const [battleLog, setBattleLog] = useState([]);
-  const [buttonsDisabled, setButtonsDisabled] = useState(false);
+  const [enableButtons, setEnableButtons] = useState(true);
+  const [counterHeal, setCounterHeal] = useState(0);
+  const [counterSpecial, setCounterSpecial] = useState(0);
+  const [enableSpecial, setEnableSpecial] = useState(false);
+  const [enableHeal, setEnableHeal] = useState(false);
   const [openWinner, setOpenWinner] = useState(false);
   const [openLooser, setOpenLooser] = useState(false);
   const [openSurrender, setOpenSurrender] = useState(false);
   const [openSettings, setOpenSettings] = useState(false);
-  const [specialAttack, setSpecialAttack] = useState(true);
-  const [specialActionsCounter, setSpecialActionsCounter] = useState(0);
-  const [heal, setHeal] = useState(true);
   const [isPlaying, setIsPlaying] = useState(false);
-  const audioRef = useRef(null); // Reference to the audio element
+  const audioRef = useRef(null);
+  const battleLogRef = useRef(null);
 
   const handleAudioToggle = () => {
     if (!isPlaying) {
@@ -39,10 +41,10 @@ function App() {
     }
   };
 
-  const cancelTurnRef = useRef(false); // Usando useRef aqui
+  const cancelTurnRef = useRef(false);
 
   
-  const battleLogRef = useRef(null);
+
 
 
 
@@ -50,10 +52,22 @@ function App() {
 // #region Handlers
 
   const handleTurn = () => {
-    setButtonsDisabled(()=>true);
-    const monsterAttack = Math.ceil(Math.random() * 30);
-    const playerAttack = Math.ceil(Math.random() * 30);
+    //Desabilita botões attack e surrender
+    setEnableButtons(false);
     
+    //Desabilita botão heal
+    setEnableHeal(false);
+    
+    //Desabilita botão special
+    setEnableSpecial(false);
+    
+    //Calcula dano aleatório do ataque do jogador
+    const playerAttack = Math.ceil(Math.random() * 30);
+
+    //Calcula dano aleatório do ataque do monstro
+    const monsterAttack = Math.ceil(Math.random() * 30);
+    
+    //Seta um segundo antes de chamar a função
     setTimeout(turn1, 1000);
     function turn1() {
       if (monsterHealth - playerAttack > 0) {
@@ -67,49 +81,8 @@ function App() {
       }
     }
 
-    setTimeout(turn2, 3000);
-    function turn2() {
-      if(cancelTurnRef.current) return;
-      if (playerHealth - monsterAttack > 0) {
-        setPlayerHealth((state) => state - monsterAttack);
-        setBattleLog(state => [...state, `You suffered ${monsterAttack}% of damage.`]);
-      } else {
-        setPlayerHealth(()=>0);
-        setBattleLog(state => [...state, 'You lose!']);
-        cancelTurnRef.current = true
-        setOpenLooser(()=>true);
-        
-      }
-      setSpecialActionsCounter(() => specialActionsCounter + 1);
-      if(specialActionsCounter === 2) {
-        setSpecialAttack(()=>false);
-        setHeal(()=>false)
-      }
-      if(cancelTurnRef.current) return;
-      setButtonsDisabled(()=>false);
-    }
-    
-  };
-
-  const handleSpecialAttackTurn = () => {
-    setButtonsDisabled(()=>true);
-    setSpecialActionsCounter(() => 0);
-    setSpecialAttack(()=>true);
-    const monsterAttack = Math.ceil(Math.random() * 30);
-    const playerAttack = Math.ceil(Math.random() * 30) * 3;
-    
-    setTimeout(turn1, 1000);
-    function turn1() {
-      if (monsterHealth - playerAttack > 0) {
-        setMonsterHealth((state) => state - playerAttack);
-        setBattleLog(state => [...state, `Monster suffered ${playerAttack}% of damage.`]);
-      } else {
-        setMonsterHealth( () => 0);
-        setBattleLog(state => [...state, 'You win!']);
-        cancelTurnRef.current = true;
-        setOpenWinner(() => true);
-      }
-    }
+    //Cancela o turno se a vida do monstro acabar
+    if(cancelTurnRef.current) return;
 
     setTimeout(turn2, 3000);
     function turn2() {
@@ -122,59 +95,92 @@ function App() {
         setBattleLog(state => [...state, 'You lose!']);
         cancelTurnRef.current = true
         setOpenLooser(()=>true);
-        
       }
+      
+      //Cancela o turno se a vida do jogador acabar
       if(cancelTurnRef.current) return;
-      setButtonsDisabled(()=>false);
+      
+      //Adiciona o contador do Special e habilita quando 3 rodadas
+      setCounterSpecial(()=>counterSpecial + 1);
+      if(counterSpecial === 2) {
+        setEnableSpecial(()=>true);
+      }
+
+      //Adiciona o contador do Heal e habilita quando 3 rodadas
+      setCounterHeal(()=>counterHeal + 1);
+      if(counterHeal === 2) {
+        setEnableHeal(()=>true);
+      }
+
+      setEnableButtons(true);
+  
     }
     
   };
 
   const handleHealTurn = () => {
-    setPlayerHealth(() => playerHealth + 10);
-    setHeal(()=>true);
-    setSpecialActionsCounter(() => 0)
+    setEnableHeal(()=>false);
+    setEnableSpecial(()=>false);
+    setBattleLog(state => [...state, 'Heal increased 10% of your health.']);
+    handleTurn();
+    setTimeout(heal, 3000);
+    function heal() {
+      setPlayerHealth(()=>playerHealth + 10);
+    
+    setCounterHeal(()=>0);
+    
+    if (counterSpecial > 0) {
+      setEnableSpecial(()=>true);
+    }
+    }
+
   }
 
-  const handleNewTurnWinner = () => {
-    setButtonsDisabled(() => false);
-    setSpecialAttack(() => true);
-    setHeal(() => true);
+  const handleSpecialTurn = () => {
+  setEnableSpecial(()=>false);
+  setEnableHeal(()=>false)
+  setBattleLog(state => [...state, 'Special damaged Monster on 10%.']);
+  handleTurn();
+  setTimeout(special, 3000)
+  function special() {
+    setMonsterHealth(()=>monsterHealth - 10)
+    
+    setCounterSpecial(()=>0);
+    if (counterHeal > 0) {
+      setEnableHeal(()=>true);
+    }
+   }
+  
+  }
+
+  const handleNewTurn = () => {
     setPlayerHealth(()=>100);
     setMonsterHealth(()=>100);
     setBattleLog(()=>[]);
-    setSpecialActionsCounter(() => 0);
-    cancelTurnRef.current = false;
-    setOpenWinner(()=>false);
-    setSpecialActionsCounter(() => 0);
-    cancelTurnRef.current = false;
-    setOpenWinner(()=>false);
-    setMonstersDefeated((prevMonstersDefeated) => {
-      const newMonstersDefeated = prevMonstersDefeated + 1;
-
-      setHighestScore((prevHighestScore) => {
-        const newHighestScore = newMonstersDefeated > prevHighestScore ? newMonstersDefeated : prevHighestScore;
-
-        localStorage.setItem('highestScore', newHighestScore);
-  
-        return newHighestScore;
-      });
-  
-      return newMonstersDefeated;
-    });
-  }
-
-  const handleNewTurnLooser = () => {
-    setButtonsDisabled(() => false);
-    setSpecialAttack(() => true);
-    setHeal(() => true);
-    setPlayerHealth(()=>100);
-    setMonsterHealth(()=>100);
-    setBattleLog(()=>[]);
-    setSpecialActionsCounter(() => 0);
-    cancelTurnRef.current = false;
+    setEnableButtons(()=>true);
+    setEnableSpecial(()=>false);
+    setEnableHeal(()=>false);
+    setCounterSpecial(()=>0);
+    setCounterHeal(()=>0);
     setOpenLooser(()=>false);
     setOpenSurrender(()=>false);
+    cancelTurnRef.current = false;
+    if(openWinner === true) {
+      setMonstersDefeated((prevMonstersDefeated) => {
+        const newMonstersDefeated = prevMonstersDefeated + 1;
+  
+        setHighestScore((prevHighestScore) => {
+          const newHighestScore = newMonstersDefeated > prevHighestScore ? newMonstersDefeated : prevHighestScore;
+  
+          localStorage.setItem('highestScore', newHighestScore);
+    
+          return newHighestScore;
+        });
+    
+        return newMonstersDefeated;
+      });
+      setOpenWinner(()=>false);
+    }
   }
 
   // #endregion
@@ -232,7 +238,7 @@ function App() {
               subtitle="Continue playing?"
               renderCancel={true}
               handleCancel={() => setOpenWinner(false)}
-              handleOk={handleNewTurnWinner}
+              handleOk={handleNewTurn}
             />           
 
             <Dialog
@@ -241,7 +247,7 @@ function App() {
               subtitle="Continue playing?"
               renderCancel={true}
               handleCancel={() => setOpenLooser(false)}
-              handleOk={handleNewTurnLooser}
+              handleOk={handleNewTurn}
             />
 
             <Dialog
@@ -250,7 +256,7 @@ function App() {
               subtitle="Are you sure?"
               renderCancel={true}
               handleCancel={() => setOpenSurrender(false)}
-              handleOk={handleNewTurnLooser}
+              handleOk={handleNewTurn}
             />
 
             <dialog className="nes-dialog is-rounded z-10" id="dialog" open={openSettings}>
@@ -258,8 +264,8 @@ function App() {
                 <p className="title mb-5">Settings</p>
                 <button
                   type="button"
-                  className={`nes-btn mb-5 text-center ${buttonsDisabled ? 'is-disabled' : ''}`}
-                  disabled={buttonsDisabled}
+                  className='nes-btn mb-5 text-center'
+                 
                   onClick={handleAudioToggle}>
                     {isPlaying ? 'Pause Audio' : 'Play Audio'}
                 </button>
@@ -298,36 +304,37 @@ function App() {
             <div className="flex w-10 lg:w-72  mx-5 flex-col items-center">
               <button 
                 type="button" 
-                className={`nes-btn w-full mb-5 ${buttonsDisabled ? 'is-disabled' : 'is-primary'}`}
+                className={`nes-btn w-full mb-5 ${enableButtons ? 'is-primary' : 'is-disabled'} `}
                 onClick={handleTurn} 
-                disabled={buttonsDisabled}
+                disabled={!enableButtons}
               >
                 <span className="hidden lg:inline">Attack</span>
                 <span className="inline lg:hidden">A</span>
               </button>
               <button 
                 type="button" 
-                className={`nes-btn w-full mb-5 ${specialAttack || buttonsDisabled ? 'is-disabled' : 'is-warning'}`}
-                onClick={handleSpecialAttackTurn} 
-                disabled={specialAttack}
+                className={`nes-btn w-full mb-5 ${enableSpecial? 'is-warning' : 'is-disabled'} `}
+                onClick={handleSpecialTurn} 
+                disabled={!enableSpecial}
               >
                 <span className="hidden lg:inline">Special Attack</span>
                 <span className="inline lg:hidden">B</span>
               </button>
               <button 
                 type="button" 
-                className={`nes-btn w-full mb-5 ${heal || buttonsDisabled ? 'is-disabled' : 'is-success'}`}
+                className={`nes-btn w-full mb-5 ${enableHeal ? 'is-success' : 'is-disabled'} `}
                 onClick={handleHealTurn} 
-                disabled={heal}
+                disabled={!enableHeal}
+              
               >
                 <span className="hidden lg:inline">Heal</span>
                 <span className="inline lg:hidden">X</span>
               </button>
               <button 
                 type="button" 
-                className={`nes-btn w-full mb-5 ${buttonsDisabled ? 'is-disabled' : 'is-error'}`}
+                className={`nes-btn w-full mb-5 ${enableButtons ? 'is-error' : 'is-disabled'} `}
                 onClick={() => setOpenSurrender(true)} 
-                disabled={buttonsDisabled}
+                disabled={!enableButtons}
               >
                 <span className="hidden lg:inline">Surrender</span>
                 <span className="inline lg:hidden">Y</span>
