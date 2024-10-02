@@ -122,12 +122,12 @@ function App() {
   };
 
   const handleHealTurn = () => {
-    
     setEnableSpecial(()=>false);
     setBattleLog(state => [...state, 'Heal increased 10% of your health.']);
     handleTurn();
     setTimeout(heal, 3000);
     function heal() {
+      if(cancelTurnRef.current) return;
       setPlayerHealth(()=>playerHealth + 10);
       setCounterHeal(()=>0);
       setEnableHeal(()=>false);
@@ -139,19 +139,19 @@ function App() {
   }
 
   const handleSpecialTurn = () => {
-  
-  setEnableHeal(()=>false)
-  setBattleLog(state => [...state, 'Special damaged Monster on 10%.']);
-  handleTurn();
-  setTimeout(special, 3000)
-  function special() {
-    setMonsterHealth(()=>monsterHealth - 10)
-    setCounterSpecial(()=>0);
-    setEnableSpecial(()=>false);
-    if (counterHeal >=2 ) {
-      setEnableHeal(()=>true);
+    setEnableHeal(()=>false)
+    setBattleLog(state => [...state, 'Special damaged Monster on 10%.']);
+    handleTurn();
+    setTimeout(special, 3000)
+    function special() {
+      if(cancelTurnRef.current) return;
+      setMonsterHealth(()=>monsterHealth - 10)
+      setCounterSpecial(()=>0);
+      setEnableSpecial(()=>false);
+      if (counterHeal >=2 ) {
+        setEnableHeal(()=>true);
+      }
     }
-   }
   
   }
 
